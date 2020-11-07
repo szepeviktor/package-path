@@ -13,19 +13,17 @@ class PackagePath
     {
         // TODO error handling
         $packageData = static::getInstallPackages();
-        $packages = array_combine(array_column($packageData, 'name'), $packageData);
-
-        if (!array_key_exists($packageName, $packages)) {
+        if ($packageData === []) {
             return null;
         }
 
-        return realpath(
-            sprintf(
-                '%s/composer/%s',
-                static::getVendorPath(),
-                $packages[$packageName]['install-path']
-            )
-        );
+        $packages = array_combine(array_column($packageData, 'name'), $packageData);
+
+        if (!array_key_exists($packageName, $packages) || !array_key_exists('install-path', $packages[$packageName])) {
+            return null;
+        }
+
+        return realpath(sprintf('%s/composer/%s', static::getVendorPath(), $packages[$packageName]['install-path']));
     }
 
     /**
@@ -68,6 +66,9 @@ class PackagePath
         // TODO error handling
         $content = file_get_contents(static::getVendorPath() . static::INSTALLED_PACKAGES_DATA_PATH);
         $packageData = json_decode($content, true);
+        if (!array_key_exists('packages', $packageData)) {
+            return [];
+        }
 
         return $packageData['packages'];
     }
