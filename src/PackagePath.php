@@ -25,7 +25,7 @@ class PackagePath
 
         $path = realpath(sprintf('%s/composer/%s', static::getVendorPath(), $packages[$packageName]['install-path']));
         if ($path === false) {
-            // Directory does not exists
+            // Directory does not exist
             return null;
         }
 
