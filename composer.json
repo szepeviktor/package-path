@@ -1,0 +1,25 @@
+{
+    "name": "szepeviktor/package-path",
+    "type": "library",
+    "description": "Get installation path of any Composer package",
+    "keywords": [
+        "composer",
+        "package",
+        "install-path"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.1 || ^8.0"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^0.12.26"
+    },
+    "autoload": {
+        "psr-4": {
+            "SzepeViktor\\Composer\\": "src/"
+        }
+    },
+    "config": {
+        "vendor-dir": "Cendor"
+    }
+}
