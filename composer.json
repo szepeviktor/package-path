@@ -1,7 +1,7 @@
 {
     "name": "szepeviktor/package-path",
     "type": "library",
-    "description": "Get installation path of any Composer package",
+    "description": "Get installation path of any Composer package.",
     "keywords": [
         "composer",
         "package",
@@ -20,6 +20,7 @@
         }
     },
     "scripts": {
-        "analyze": "phpstan analyze --level=max src/"
+        "analyze": "phpstan analyze --level=max src/",
+        "test": "@php -r 'require __DIR__.\"/vendor/autoload.php\"; var_dump(\\SzepeViktor\\Composer\\PackagePath::get(\"phpstan/phpstan\"));'"
     }
 }

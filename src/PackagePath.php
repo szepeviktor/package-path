@@ -11,18 +11,25 @@ class PackagePath
 
     public static function get(string $packageName): ?string
     {
-        // TODO error handling
         $packageData = static::getInstallPackages();
         if ($packageData === []) {
+            // No installed packages
             return null;
         }
 
-        $packages = array_combine(array_column($packageData, 'name'), $packageData);
+        $packages = (array)array_combine(array_column($packageData, 'name'), $packageData);
         if (!array_key_exists($packageName, $packages) || !array_key_exists('install-path', $packages[$packageName])) {
+            // Package not found or missing 'install-path' key
             return null;
         }
 
-        return realpath(sprintf('%s/composer/%s', static::getVendorPath(), $packages[$packageName]['install-path']));
+        $path = realpath(sprintf('%s/composer/%s', static::getVendorPath(), $packages[$packageName]['install-path']));
+        if ($path === false) {
+            // Directory does not exists
+            return null;
+        }
+
+        return $path;
     }
 
     /**
@@ -37,7 +44,6 @@ class PackagePath
         }
 
         $reflector = new ReflectionClass(ClassLoader::class);
-
         $classLoaderPath = $reflector->getFileName();
         if ($classLoaderPath === false) {
             throw new \RuntimeException('Unable to find Composer ClassLoader file.');
@@ -62,10 +68,15 @@ class PackagePath
             return $cache;
         }
 
-        // TODO error handling
         $content = file_get_contents(static::getVendorPath() . static::INSTALLED_PACKAGES_DATA_PATH);
+        if ($content === false) {
+            // installed.json not found
+            return [];
+        }
+
         $packageData = json_decode($content, true);
-        if (!array_key_exists('packages', $packageData)) {
+        if (json_last_error() !== \JSON_ERROR_NONE || !array_key_exists('packages', $packageData)) {
+            // JSON error or missing 'packages' key
             return [];
         }
 
