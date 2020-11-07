@@ -7,7 +7,7 @@ use ReflectionClass;
 
 class PackagePath
 {
-    private const INSTALLED_PACKAGES_DATA_PATH = '/composer/installed.json';
+    public const INSTALLED_PACKAGES_DATA_PATH = '/composer/installed.json';
 
     public static function get(string $packageName): ?string
     {
@@ -18,7 +18,6 @@ class PackagePath
         }
 
         $packages = array_combine(array_column($packageData, 'name'), $packageData);
-
         if (!array_key_exists($packageName, $packages) || !array_key_exists('install-path', $packages[$packageName])) {
             return null;
         }
@@ -31,17 +30,17 @@ class PackagePath
      */
     public static function getVendorPath(): string
     {
-        static $vendorPath;
+        static $cache;
 
-        if (is_string($vendorPath)) {
-            return $vendorPath;
+        if (is_string($cache)) {
+            return $cache;
         }
 
         $reflector = new ReflectionClass(ClassLoader::class);
 
         $classLoaderPath = $reflector->getFileName();
         if ($classLoaderPath === false) {
-            throw new \RuntimeException('Unable to find Composer ClassLoader.');
+            throw new \RuntimeException('Unable to find Composer ClassLoader file.');
         }
 
         $vendorPath = dirname($classLoaderPath, 2);
@@ -49,18 +48,18 @@ class PackagePath
             throw new \RuntimeException('Unable to detect vendor path.');
         }
 
-        return $vendorPath;
+        return $cache = $vendorPath;
     }
 
     /**
      * @return list<array<string, mixed>>
      */
-    private static function getInstallPackages(): array
+    protected static function getInstallPackages(): array
     {
-        static $packageData;
+        static $cache;
 
-        if (is_array($packageData)) {
-            return $packageData['packages'];
+        if (is_array($cache)) {
+            return $cache;
         }
 
         // TODO error handling
@@ -70,6 +69,6 @@ class PackagePath
             return [];
         }
 
-        return $packageData['packages'];
+        return $cache = $packageData['packages'];
     }
 }

@@ -19,7 +19,7 @@
             "SzepeViktor\\Composer\\": "src/"
         }
     },
-    "config": {
-        "vendor-dir": "Cendor"
+    "scripts": {
+        "analyze": "phpstan analyze --level=max src/"
     }
 }
