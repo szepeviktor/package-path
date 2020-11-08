@@ -9,7 +9,8 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.1 || ^8.0"
+        "php": "^7.1 || ^8.0",
+        "composer-plugin-api": "^2.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^0.12.26"
@@ -20,7 +21,7 @@
         }
     },
     "scripts": {
-        "analyze": "phpstan analyze --level=max src/",
+        "analyze": "phpstan analyze --ansi --level=max src/",
         "test": "@php -r 'require __DIR__.\"/vendor/autoload.php\"; var_dump(\\SzepeViktor\\Composer\\PackagePath::get(\"phpstan/phpstan\"));'"
     }
 }
