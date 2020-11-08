@@ -17,7 +17,7 @@ class PackagePath
             return null;
         }
 
-        $packages = (array)array_combine(array_column($packageData, 'name'), $packageData);
+        $packages = array_column($packageData, null, 'name');
         if (!array_key_exists($packageName, $packages) || !array_key_exists('install-path', $packages[$packageName])) {
             // Package not found or missing 'install-path' key
             return null;
