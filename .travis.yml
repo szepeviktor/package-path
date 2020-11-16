@@ -1,0 +1,28 @@
+# TravisCI configuration for szepeviktor/package-path
+
+language: "php"
+os:
+  - "linux"
+dist: "bionic"
+
+php:
+  - "7.4"
+  - "7.3"
+  - "7.2"
+  - "7.1"
+  - "8.0snapshot"
+
+cache:
+  directories:
+    - "${HOME}/.composer/cache"
+
+before_install:
+  - "phpenv config-rm xdebug.ini"
+  - "composer validate --strict"
+
+install:
+  - "composer update --prefer-dist"
+
+script:
+  - "composer run-script test"
+  - "composer run-script analyze"
