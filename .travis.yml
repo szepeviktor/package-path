@@ -9,7 +9,8 @@ _shared_script_check_author: &script_check_author |
     curl -s -G --data-urlencode "q=type:user in:email ${author}" "${github_api_url}" \
       | grep -F -x '  "total_count": 1,'
   }
-  git show --no-patch --pretty="format:%ae" "${TRAVIS_COMMIT_RANGE}" \
+  test -z "${TRAVIS_COMMIT_RANGE}" \
+    || git show --no-patch --pretty="format:%ae" "${TRAVIS_COMMIT_RANGE}" \
     | sort -u \
     | while read -r author; do Check_author "${author}"; done
 
