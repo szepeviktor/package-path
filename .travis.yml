@@ -1,5 +1,22 @@
 # TravisCI configuration for szepeviktor/package-path
 
+_shared_script_check_author: &script_check_author |
+  Check_author()
+  {
+    local author="$1"
+    local github_api_url="https://api.github.com/search/users"
+    echo "Checking ${author} ..."
+    curl -s -G --data-urlencode "q=type:user in:email ${author}" "${github_api_url}" \
+      | grep -F -x '  "total_count": 1,'
+  }
+  git show --no-patch --pretty="format:%ae" "${TRAVIS_COMMIT_RANGE}" \
+    | sort -u \
+    | while read -r author; do Check_author "${author}"; done
+
+_shared_script_check_executable: &script_check_executable |
+  # All files should not be executable
+  test -z "$(find . -type f -not -path "./.git/*" -executable)"
+
 language: "php"
 os:
   - "linux"
@@ -23,19 +40,7 @@ jobs:
       before_install: "skip"
       install: "skip"
       before_script: "skip"
-      script:
-        - |
-          Check_author()
-          {
-            local author="$1"
-            local github_api_url="https://api.github.com/search/users"
-            echo "Checking ${author} ..."
-            curl -s -G --data-urlencode "q=type:user in:email ${author}" "${github_api_url}" \
-              | grep -F -x '  "total_count": 1,'
-          }
-          git show --no-patch --pretty="format:%ae" "${TRAVIS_COMMIT_RANGE}" \
-            | sort -u \
-            | while read -r author; do Check_author "${author}"; done
+      script: *script_check_author
       after_script: "skip"
 
     - stage: "commits"
@@ -43,10 +48,7 @@ jobs:
       before_install: "skip"
       install: "skip"
       before_script: "skip"
-      script:
-        # All files should not be executable
-        - |
-          test -z "$(find . -type f -not -path "./.git/*" -executable)"
+      script: *script_check_executable
       after_script: "skip"
 
 cache:
