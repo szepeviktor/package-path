@@ -6,6 +6,7 @@ _shared_script_check_author: &script_check_author |
     local author="$1"
     local github_api_url="https://api.github.com/search/users"
     echo "Checking ${author} ..."
+    test "${author%@users.noreply.github.com}" == "${author}" || return 0
     curl -s -G --data-urlencode "q=type:user in:email ${author}" "${github_api_url}" \
       | grep -F -x '  "total_count": 1,'
   }
