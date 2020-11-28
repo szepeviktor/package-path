@@ -33,7 +33,7 @@ class PackagePath
     }
 
     /**
-     * throws \RuntimeException
+     * throws \RuntimeException.
      */
     public static function getVendorPath(): string
     {
@@ -68,7 +68,7 @@ class PackagePath
             return $cache;
         }
 
-        $content = file_get_contents(static::getVendorPath() . static::INSTALLED_PACKAGES_DATA_PATH);
+        $content = file_get_contents(static::getVendorPath().static::INSTALLED_PACKAGES_DATA_PATH);
         if ($content === false) {
             // installed.json not found
             return [];
