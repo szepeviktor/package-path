@@ -33,7 +33,7 @@ class PackagePath
     }
 
     /**
-     * throws \RuntimeException
+     * @throws \RuntimeException
      */
     public static function getVendorPath(): string
     {
