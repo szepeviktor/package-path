@@ -1,9 +1,34 @@
 # TravisCI configuration for szepeviktor/package-path
 
+_shared_script_check_author: &script_check_author |
+  Check_author()
+  {
+    local author="$1"
+    local github_api_url="https://api.github.com/search/users"
+    echo "Checking ${author} ..."
+    test "${author%@users.noreply.github.com}" == "${author}" || return 0
+    curl -s -G --data-urlencode "q=type:user in:email ${author}" "${github_api_url}" \
+      | grep -F -x '  "total_count": 1,'
+  }
+  test -z "${TRAVIS_COMMIT_RANGE}" \
+    || git show --no-patch --pretty="format:%ae" "${TRAVIS_COMMIT_RANGE}" \
+    | sort -u \
+    | while read -r author; do Check_author "${author}"; done
+
+_shared_script_check_executable: &script_check_executable |
+  # All files should not be executable
+  test -z "$(find . -type f -not -path "./.git/*" -executable)"
+
+if: "branch = master"
+
 language: "php"
 os:
   - "linux"
 dist: "bionic"
+
+stages:
+  - "commits"
+  - "test"
 
 php:
   - "7.4"
@@ -11,6 +36,24 @@ php:
   - "7.2"
   - "7.1"
   - "8.0snapshot"
+
+jobs:
+  include:
+    - stage: "commits"
+      name: "Get commit email addresses and query GitHub API"
+      before_install: "skip"
+      install: "skip"
+      before_script: "skip"
+      script: *script_check_author
+      after_script: "skip"
+
+    - stage: "commits"
+      name: "Check execution bits"
+      before_install: "skip"
+      install: "skip"
+      before_script: "skip"
+      script: *script_check_executable
+      after_script: "skip"
 
 cache:
   directories:
