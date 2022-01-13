@@ -74,6 +74,7 @@ class PackagePath
             return [];
         }
 
+        /** @var array<array-key, mixed> $packageData */
         $packageData = json_decode($content, true);
         if (json_last_error() !== \JSON_ERROR_NONE || !array_key_exists('packages', $packageData)) {
             // JSON error or missing 'packages' key
